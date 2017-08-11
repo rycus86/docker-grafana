@@ -1,7 +1,8 @@
 FROM debian as builder
 
 ARG VERSION=4.4.3
-ARG CC_ARCH=""
+ARG CC=""
+ARG CC_PKG=""
 ARG CC_GOARCH=""
 
 ENV GOPATH=/go
@@ -17,11 +18,11 @@ RUN apt-get update  \
             libc6-dev \
             xz-utils \
             bzip2 \
-    && if [ -n "$CC_ARCH" ]; then apt-get install --no-install-recommends -y "gcc-$CC_ARCH-linux-gnu"; fi \
+            $CC_PKG \
     && ln -s /usr/lib/go-1.8/bin/go /usr/bin/go \
     && git clone -b "v$VERSION" --single-branch https://github.com/grafana/grafana.git . \
-    && if [ -n "$CC_ARCH" ]; then \
-        export CC=$CC_ARCH-linux-gnu-gcc && \
+    && if [ -n "$CC" ]; then \
+        export CC=$CC && \
         export CGO_ENABLED=1 && \
         export GOOS=linux && \
         export GOARCH=$CC_GOARCH ; \

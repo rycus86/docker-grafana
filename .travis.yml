@@ -10,7 +10,12 @@ addons:
 
 script:
 # build
-- docker build -t grafana:$DOCKER_TAG -f Dockerfile --build-arg VERSION=$GRAFANA_VERSION --build-arg CC_ARCH=$CC_ARCH --build-arg CC_GOARCH=$CC_GOARCH .
+- docker build -t grafana:$DOCKER_TAG -f Dockerfile \
+    --build-arg VERSION=$GRAFANA_VERSION \
+    --build-arg CC=$CC \
+    --build-arg CC=$CC_PKG \
+    --build-arg CC_GOARCH=$CC_GOARCH \
+    .
 
 after_success:
 # push image
@@ -29,5 +34,5 @@ env:
   global:
   - GRAFANA_VERSION=4.4.3
   matrix:
-  - DOCKER_TAG=armhf    CC_ARCH=armhf     CC_GOARCH=arm
-  - DOCKER_TAG=aarch64  CC_ARCH=aarch64   CC_GOARCH=arm64
+  - DOCKER_TAG=armhf    CC=arm-linux-gnueabihf-gcc  CC_PKG=gcc-arm-linux-gnueabihf  CC_GOARCH=arm
+  - DOCKER_TAG=aarch64  CC=aarch64-linux-gnu-gcc    CC_PKG=gcc-aarch64-linux-gnu    CC_GOARCH=arm64
