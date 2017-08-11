@@ -1,0 +1,33 @@
+sudo: required
+
+services:
+- docker
+
+addons:
+  apt:
+    packages:
+      - docker-ce
+
+script:
+# build
+- docker build -t grafana:$DOCKER_TAG -f Dockerfile --build-arg VERSION=$GRAFANA_VERSION --build-arg CC_ARCH=$CC_ARCH --build-arg CC_GOARCH=$CC_GOARCH .
+
+after_success:
+# push image
+- >
+  if [ "$TRAVIS_BRANCH" == "master" ]; then
+      docker login -u="rycus86" -p="$DOCKER_PASSWORD" && \
+      docker tag grafana:$DOCKER_TAG rycus86/grafana:$DOCKER_TAG && \
+      docker push rycus86/grafana:$DOCKER_TAG
+  elif [ "$TRAVIS_BRANCH" == "$GRAFANA_VERSION" ]; then
+      docker login -u="rycus86" -p="$DOCKER_PASSWORD" && \
+      docker tag grafana:$DOCKER_TAG rycus86/grafana:$GRAFANA_VERSION-$DOCKER_TAG && \
+      docker push rycus86/grafana:$GRAFANA_VERSION-$DOCKER_TAG
+  fi
+
+env:
+  global:
+  - GRAFANA_VERSION=4.4.3
+  matrix:
+  - DOCKER_TAG=armhf    CC_ARCH=armhf     CC_GOARCH=arm
+  - DOCKER_TAG=aarch64  CC_ARCH=aarch64   CC_GOARCH=arm64
