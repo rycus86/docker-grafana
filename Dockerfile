@@ -17,7 +17,7 @@ RUN apt-get update  \
             libc6-dev \
             xz-utils \
             bzip2 \
-    && if [ -n "$cc" ]; then apt-get install --no-install-recommends -y "gcc-$CC_ARCH-linux-gnu"; fi \
+    && if [ -n "$CC_ARCH" ]; then apt-get install --no-install-recommends -y "gcc-$CC_ARCH-linux-gnu"; fi \
     && ln -s /usr/lib/go-1.8/bin/go /usr/bin/go \
     && git clone -b "v$VERSION" --single-branch https://github.com/grafana/grafana.git . \
     && if [ -n "$CC_ARCH" ]; then \
