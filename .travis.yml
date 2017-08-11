@@ -14,7 +14,7 @@ script:
   docker build -t grafana:$DOCKER_TAG -f Dockerfile \
     --build-arg VERSION=$GRAFANA_VERSION \
     --build-arg CC=$CC \
-    --build-arg CC=$CC_PKG \
+    --build-arg CC_PKG=$CC_PKG \
     --build-arg CC_GOARCH=$CC_GOARCH \
     .
 
