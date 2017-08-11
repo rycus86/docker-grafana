@@ -9,6 +9,8 @@ addons:
       - docker-ce
 
 script:
+# set up the base image
+- sed -i "s#^FROM alpine.*#FROM ${DOCKER_FROM}#" Dockerfile
 # build
 - >
   docker build -t grafana:$DOCKER_TAG -f Dockerfile \
@@ -35,5 +37,5 @@ env:
   global:
   - GRAFANA_VERSION=4.4.3
   matrix:
-  - DOCKER_TAG=armhf    CC=arm-linux-gnueabihf-gcc  CC_PKG=gccgo-arm-linux-gnueabihf  CC_GOARCH=arm
-  - DOCKER_TAG=aarch64  CC=aarch64-linux-gnu-gcc    CC_PKG=gccgo-aarch64-linux-gnu    CC_GOARCH=arm64
+  - DOCKER_FROM=rycus86/armhf-alpine-qemu    DOCKER_TAG=armhf    CC=arm-linux-gnueabihf-gcc  CC_PKG=gccgo-arm-linux-gnueabihf  CC_GOARCH=arm
+  - DOCKER_FROM=rycus86/arm64v8-alpine-qemu  DOCKER_TAG=aarch64  CC=aarch64-linux-gnu-gcc    CC_PKG=gccgo-aarch64-linux-gnu    CC_GOARCH=arm64
