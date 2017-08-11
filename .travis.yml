@@ -10,7 +10,7 @@ addons:
 
 script:
 # set up the base image
-- sed -i "s#^FROM debian.*#FROM ${DOCKER_FROM}#" Dockerfile
+- sed -i "s#^FROM debian:stable-slim#FROM ${DOCKER_FROM}#" Dockerfile
 # build
 - >
   docker build -t grafana:$DOCKER_TAG -f Dockerfile \
