@@ -10,7 +10,8 @@ addons:
 
 script:
 # build
-- docker build -t grafana:$DOCKER_TAG -f Dockerfile \
+- >
+  docker build -t grafana:$DOCKER_TAG -f Dockerfile \
     --build-arg VERSION=$GRAFANA_VERSION \
     --build-arg CC=$CC \
     --build-arg CC=$CC_PKG \
