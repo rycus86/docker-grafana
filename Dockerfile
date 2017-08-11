@@ -27,7 +27,9 @@ RUN apt-get update  \
         export GOOS=linux && \
         export GOARCH=$CC_GOARCH ; \
     fi \
+    && echo 'Building grafana-server ...' \
     && go build -o dist/grafana-server ./pkg/cmd/grafana-server \
+    && echo 'Building the frontend ...' \
     && wget -O /tmp/node.tar.xz https://nodejs.org/dist/v6.11.2/node-v6.11.2-linux-x64.tar.xz \
     && cd /usr/local \
     && tar --strip-components=1 -xf /tmp/node.tar.xz \

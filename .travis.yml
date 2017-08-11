@@ -35,5 +35,5 @@ env:
   global:
   - GRAFANA_VERSION=4.4.3
   matrix:
-  - DOCKER_TAG=armhf    CC=arm-linux-gnueabihf-gcc  CC_PKG=gcc-arm-linux-gnueabihf  CC_GOARCH=arm
-  - DOCKER_TAG=aarch64  CC=aarch64-linux-gnu-gcc    CC_PKG=gcc-aarch64-linux-gnu    CC_GOARCH=arm64
+  - DOCKER_TAG=armhf    CC=arm-linux-gnueabihf-gcc  CC_PKG=gccgo-arm-linux-gnueabihf  CC_GOARCH=arm
+  - DOCKER_TAG=aarch64  CC=aarch64-linux-gnu-gcc    CC_PKG=gccgo-aarch64-linux-gnu    CC_GOARCH=arm64
