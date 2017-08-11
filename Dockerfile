@@ -41,15 +41,9 @@ RUN apt-get update  \
     && grunt
 
 
-FROM alpine:latest
+FROM debian:stable-slim
 
 LABEL maintainer "Viktor Adam <rycus86@gmail.com>"
-
-RUN apk --no-cache add --virtual build-dependencies ca-certificates wget  \
-        && wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub  \
-        && wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.25-r0/glibc-2.25-r0.apk  \
-        && apk del build-dependencies  \
-        && apk add glibc-2.25-r0.apk
 
 COPY --from=builder /go/src/github.com/grafana/grafana/dist/grafana-server  /usr/sbin/grafana-server
 COPY --from=builder /go/src/github.com/grafana/grafana/conf/defaults.ini    /usr/share/grafana/conf/defaults.ini
