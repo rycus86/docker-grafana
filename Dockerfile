@@ -55,10 +55,9 @@ COPY --from=builder /go/src/github.com/grafana/grafana/vendor               /usr
 EXPOSE      3000
 VOLUME      ["/var/lib/grafana", "/var/log/grafana", "/etc/grafana"]
 ENTRYPOINT  [ "/usr/sbin/grafana-server" ]
-CMD         [ "--homepath=/usr/share/grafana",                          \
-              "--config=/etc/grafana/grafana.ini",                      \
-              "cfg:default.log.mode='console'",                         \
-              "cfg:default.paths.data='/var/lib/grafana'",              \
-              "cfg:default.paths.logs='/var/log/grafana'",              \
-              "cfg:default.paths.plugins='/var/lib/grafana/plugins'",   \
-              "$@" ]
+CMD         [ "--homepath=/usr/share/grafana",                        \
+              "--config=/etc/grafana/grafana.ini",                    \
+              "cfg:default.log.mode=console",                         \
+              "cfg:default.paths.data=/var/lib/grafana",              \
+              "cfg:default.paths.logs=/var/log/grafana",              \
+              "cfg:default.paths.plugins=/var/lib/grafana/plugins" ]
