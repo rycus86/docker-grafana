@@ -8,34 +8,67 @@ addons:
     packages:
       - docker-ce
 
-script:
-# set up the base image
-- sed -i "s#^FROM debian:stable-slim#FROM ${DOCKER_FROM}#" Dockerfile
-# build
-- >
-  docker build -t grafana:$DOCKER_TAG -f Dockerfile \
-    --build-arg VERSION=$GRAFANA_VERSION \
-    --build-arg CC=$CC \
-    --build-arg CC_PKG=$CC_PKG \
-    --build-arg CC_GOARCH=$CC_GOARCH \
-    .
+install: skip
 
-after_success:
-# push image
-- >
-  if [ "$TRAVIS_BRANCH" == "master" ]; then
-      docker login -u="rycus86" -p="$DOCKER_PASSWORD" && \
-      docker tag grafana:$DOCKER_TAG rycus86/grafana:$DOCKER_TAG && \
-      docker push rycus86/grafana:$DOCKER_TAG
-  elif [ "$TRAVIS_BRANCH" == "$GRAFANA_VERSION" ]; then
-      docker login -u="rycus86" -p="$DOCKER_PASSWORD" && \
-      docker tag grafana:$DOCKER_TAG rycus86/grafana:$GRAFANA_VERSION-$DOCKER_TAG && \
-      docker push rycus86/grafana:$GRAFANA_VERSION-$DOCKER_TAG
-  fi
+jobs:
+  include:
+    - &deploy-stage
+      stage: build and deploy
+      if: branch = master
+      script:
+        # set up the base image
+        - sed -i "s#^FROM debian:stable-slim#FROM ${DOCKER_FROM}#" Dockerfile
+        # build
+        - >
+          docker build -t grafana:$DOCKER_TAG -f Dockerfile \
+            --build-arg VERSION=$GRAFANA_VERSION \
+            --build-arg CC=$CC \
+            --build-arg CC_PKG=$CC_PKG \
+            --build-arg CC_GOARCH=$CC_GOARCH \
+            .
+      after_success:
+        - |
+          docker login -u="rycus86" -p="$DOCKER_PASSWORD"
+          if [ "$TRAVIS_BRANCH" == "master" ]; then
+              docker tag grafana:$DOCKER_TAG rycus86/grafana:$DOCKER_TAG
+              docker push rycus86/grafana:$DOCKER_TAG
+          elif [ "$TRAVIS_BRANCH" == "$GRAFANA_VERSION" ]; then
+              docker tag grafana:$DOCKER_TAG rycus86/grafana:$GRAFANA_VERSION-$DOCKER_TAG
+              docker push rycus86/grafana:$GRAFANA_VERSION-$DOCKER_TAG
+          fi
+      env:
+        - DOCKER_FROM=debian:stable-slim
+        - DOCKER_TAG=amd64
+
+    - <<: *deploy-stage
+      env:
+        - DOCKER_FROM=rycus86/armhf-debian-qemu
+        - DOCKER_TAG=armhf
+        - CC=arm-linux-gnueabihf-gcc
+        - CC_PKG=gccgo-arm-linux-gnueabihf
+        - CC_GOARCH=arm
+
+    - <<: *deploy-stage
+      env:
+        - DOCKER_FROM=rycus86/arm64v8-debian-qemu
+        - DOCKER_TAG=aarch64
+        - CC=aarch64-linux-gnu-gcc
+        - CC_PKG=gccgo-aarch64-linux-gnu
+        - CC_GOARCH=arm64
+
+    - stage: manifest
+      if: branch = master
+      script:
+        - |
+          if [ "$TRAVIS_BRANCH" == "$GRAFANA_VERSION" ]; then
+              sed -i "s#rycus86/grafana:#rycus86/grafana:${GRAFANA_VERSION}-#" Dockerfile
+              sed -i "s#rycus86/grafana:${GRAFANA_VERSION}-latest#rycus86/grafana:${GRAFANA_VERSION}#" Dockerfile
+          fi
+        - docker login -u="rycus86" -p="${DOCKER_PASSWORD}"
+        - curl -fsSL https://github.com/estesp/manifest-tool/releases/download/v0.7.0/manifest-tool-linux-amd64 > ./manifest-tool
+        - chmod +x ./manifest-tool
+        - ./manifest-tool push from-spec manifest.yml
 
 env:
   global:
-  - GRAFANA_VERSION=4.4.3
-  matrix:
-  - DOCKER_FROM=rycus86/armhf-debian-qemu    DOCKER_TAG=armhf    CC=arm-linux-gnueabihf-gcc  CC_PKG=gccgo-arm-linux-gnueabihf  CC_GOARCH=arm
-  - DOCKER_FROM=rycus86/arm64v8-debian-qemu  DOCKER_TAG=aarch64  CC=aarch64-linux-gnu-gcc    CC_PKG=gccgo-aarch64-linux-gnu    CC_GOARCH=arm64
+  - GRAFANA_VERSION=4.6.1
