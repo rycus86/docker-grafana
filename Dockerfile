@@ -1,6 +1,6 @@
 FROM debian as builder
 
-ARG VERSION=4.4.3
+ARG VERSION=4.6.1
 ARG CC=""
 ARG CC_PKG=""
 ARG CC_GOARCH=""
@@ -30,7 +30,7 @@ RUN apt-get update  \
     && echo 'Building grafana-server ...' \
     && go build -o dist/grafana-server ./pkg/cmd/grafana-server \
     && echo 'Building the frontend ...' \
-    && wget -O /tmp/node.tar.xz https://nodejs.org/dist/v6.11.2/node-v6.11.2-linux-x64.tar.xz \
+    && wget -O /tmp/node.tar.xz https://nodejs.org/dist/v8.9.0/node-v8.9.0-linux-x64.tar.xz \
     && cd /usr/local \
     && tar --strip-components=1 -xf /tmp/node.tar.xz \
     && rm /tmp/node.tar.xz \
@@ -48,7 +48,7 @@ LABEL maintainer "Viktor Adam <rycus86@gmail.com>"
 COPY --from=builder /go/src/github.com/grafana/grafana/dist/grafana-server  /usr/sbin/grafana-server
 COPY --from=builder /go/src/github.com/grafana/grafana/conf/defaults.ini    /usr/share/grafana/conf/defaults.ini
 COPY --from=builder /go/src/github.com/grafana/grafana/conf/sample.ini      /etc/grafana/grafana.ini
-COPY --from=builder /go/src/github.com/grafana/grafana/public_gen           /usr/share/grafana/public
+COPY --from=builder /go/src/github.com/grafana/grafana/public               /usr/share/grafana/public
 COPY --from=builder /go/src/github.com/grafana/grafana/scripts              /usr/share/grafana/scripts
 COPY --from=builder /go/src/github.com/grafana/grafana/vendor               /usr/share/grafana/vendor
 
