@@ -14,7 +14,6 @@ jobs:
   include:
     - &deploy-stage
       stage: build and deploy
-      if: branch = master
       script:
         # set up the base image
         - sed -i "s#^FROM debian:stable-slim#FROM ${DOCKER_FROM}#" Dockerfile
@@ -57,7 +56,6 @@ jobs:
         - CC_GOARCH=arm64
 
     - stage: manifest
-      if: branch = master
       script:
         - |
           if [ "$TRAVIS_BRANCH" == "$GRAFANA_VERSION" ]; then
