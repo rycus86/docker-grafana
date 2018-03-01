@@ -1,7 +1,7 @@
-FROM debian:sid as builder
+FROM debian as builder
 
 ARG VERSION=5.0.0
-ARG GO_VERSION=1.9
+ARG GO_VERSION=1.9.4
 ARG NODE_VERSION=9.2.0
 
 ARG CC=""
@@ -14,7 +14,6 @@ WORKDIR /go/src/github.com/grafana/grafana
 RUN apt-get update  \
     && apt-get install --no-install-recommends -y \
             git \
-            golang-${GO_VERSION} \
             wget \
             ca-certificates \
             gcc \
@@ -22,6 +21,9 @@ RUN apt-get update  \
             xz-utils \
             bzip2 \
             $CC_PKG \
+    && mkdir -p /usr/lib/go-${GO_VERSION} \
+    && wget https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz -O /tmp/go-dist.tar.gz \
+    && tar --strip-components=1 -C /usr/lib/go-${GO_VERSION} -xzf /tmp/go-dist.tar.gz \
     && ln -s /usr/lib/go-${GO_VERSION}/bin/go /usr/bin/go \
     && git clone --progress --verbose -b "v${VERSION}" --single-branch https://github.com/grafana/grafana.git . \
     && if [ -n "$CC" ]; then \
