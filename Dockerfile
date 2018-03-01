@@ -1,6 +1,9 @@
-FROM debian as builder
+FROM debian:sid as builder
 
-ARG VERSION=4.6.1
+ARG VERSION=5.0.0
+ARG GO_VERSION=1.9
+ARG NODE_VERSION=9.2.0
+
 ARG CC=""
 ARG CC_PKG=""
 ARG CC_GOARCH=""
@@ -11,7 +14,7 @@ WORKDIR /go/src/github.com/grafana/grafana
 RUN apt-get update  \
     && apt-get install --no-install-recommends -y \
             git \
-            golang-1.8 \
+            golang-${GO_VERSION} \
             wget \
             ca-certificates \
             gcc \
@@ -19,8 +22,8 @@ RUN apt-get update  \
             xz-utils \
             bzip2 \
             $CC_PKG \
-    && ln -s /usr/lib/go-1.8/bin/go /usr/bin/go \
-    && git clone -b "v$VERSION" --single-branch https://github.com/grafana/grafana.git . \
+    && ln -s /usr/lib/go-${GO_VERSION}/bin/go /usr/bin/go \
+    && git clone -b "v${VERSION}" --single-branch https://github.com/grafana/grafana.git . \
     && if [ -n "$CC" ]; then \
         export CC=$CC && \
         export CGO_ENABLED=1 && \
@@ -30,7 +33,7 @@ RUN apt-get update  \
     && echo 'Building grafana-server ...' \
     && go build -o dist/grafana-server ./pkg/cmd/grafana-server \
     && echo 'Building the frontend ...' \
-    && wget -O /tmp/node.tar.xz https://nodejs.org/dist/v8.9.0/node-v8.9.0-linux-x64.tar.xz \
+    && wget -O /tmp/node.tar.xz https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz \
     && cd /usr/local \
     && tar --strip-components=1 -xf /tmp/node.tar.xz \
     && rm /tmp/node.tar.xz \
