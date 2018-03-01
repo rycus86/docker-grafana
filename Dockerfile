@@ -23,7 +23,7 @@ RUN apt-get update  \
             bzip2 \
             $CC_PKG \
     && ln -s /usr/lib/go-${GO_VERSION}/bin/go /usr/bin/go \
-    && git clone -b "v${VERSION}" --single-branch https://github.com/grafana/grafana.git . \
+    && git clone --progress --verbose -b "v${VERSION}" --single-branch https://github.com/grafana/grafana.git . \
     && if [ -n "$CC" ]; then \
         export CC=$CC && \
         export CGO_ENABLED=1 && \
@@ -31,7 +31,7 @@ RUN apt-get update  \
         export GOARCH=$CC_GOARCH ; \
     fi \
     && echo 'Building grafana-server ...' \
-    && go build -o dist/grafana-server ./pkg/cmd/grafana-server \
+    && go build -v -o dist/grafana-server ./pkg/cmd/grafana-server \
     && echo 'Building the frontend ...' \
     && wget -O /tmp/node.tar.xz https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz \
     && cd /usr/local \
