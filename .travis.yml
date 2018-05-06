@@ -27,7 +27,7 @@ jobs:
             .
       after_success:
         - |
-          echo ${DOCKER_PASSWORD} | docker login --user "rycus86" --password-stdin
+          echo ${DOCKER_PASSWORD} | docker login --username "rycus86" --password-stdin
           if [ "$TRAVIS_BRANCH" == "master" ]; then
               docker tag grafana:$DOCKER_TAG rycus86/grafana:$DOCKER_TAG
               docker push rycus86/grafana:$DOCKER_TAG
@@ -62,7 +62,7 @@ jobs:
               sed -i "s#rycus86/grafana:#rycus86/grafana:${GRAFANA_VERSION}-#" manifest.yml
               sed -i "s#rycus86/grafana:${GRAFANA_VERSION}-latest#rycus86/grafana:${GRAFANA_VERSION}#" manifest.yml
           fi
-        - echo ${DOCKER_PASSWORD} | docker login --user "rycus86" --password-stdin
+        - echo ${DOCKER_PASSWORD} | docker login --username "rycus86" --password-stdin
         - curl -fsSL https://github.com/estesp/manifest-tool/releases/download/v0.7.0/manifest-tool-linux-amd64 > ./manifest-tool
         - chmod +x ./manifest-tool
         - ./manifest-tool push from-spec manifest.yml
