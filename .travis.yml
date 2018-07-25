@@ -69,4 +69,4 @@ jobs:
 
 env:
   global:
-  - GRAFANA_VERSION=5.2.1
+  - GRAFANA_VERSION=5.2.2
