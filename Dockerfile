@@ -6,13 +6,13 @@ ARG VERSION=5.2.2
 ARG ARCH=amd64
 
 RUN apt-get update \
-    && apt-get install -y adduser libfontconfig \
+    && apt-get install -y --no-install-recommends libfontconfig curl ca-certificates \
+    && curl -fsSL https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana_${VERSION}_${ARCH}.deb > /tmp/install.deb \
+    && dpkg -i /tmp/install.deb \
+    && rm -f /tmp/install.deb \
+    && apt-get purge -y libfontconfig curl \
+    && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
-
-ADD https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana_${VERSION}_${ARCH}.deb /tmp/install.deb
-
-RUN dpkg -i /tmp/install.deb \
-    && rm -f /tmp/install.deb
 
 USER grafana
 

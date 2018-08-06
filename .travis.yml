@@ -14,20 +14,20 @@ jobs:
         - docker run --rm --privileged multiarch/qemu-user-static:register --reset
         # build
         - >
-          docker build -t grafana:$DOCKER_TAG -f Dockerfile \
-            --build-arg BASE_IMAGE=$DOCKER_FROM \
-            --build-arg VERSION=$GRAFANA_VERSION \
-            --build-arg ARCH=$GRAFANA_ARCH \
+          docker build -t grafana:${DOCKER_TAG} -f Dockerfile \
+            --build-arg BASE_IMAGE=${DOCKER_FROM} \
+            --build-arg VERSION=${GRAFANA_VERSION} \
+            --build-arg ARCH=${GRAFANA_ARCH} \
             .
       after_success:
         - |
           echo ${DOCKER_PASSWORD} | docker login --username "rycus86" --password-stdin
           if [ "$TRAVIS_BRANCH" == "master" ]; then
-              docker tag grafana:$DOCKER_TAG rycus86/grafana:$DOCKER_TAG
-              docker push rycus86/grafana:$DOCKER_TAG
-          elif [ "$TRAVIS_BRANCH" == "$GRAFANA_VERSION-alt" ]; then
-              docker tag grafana:$DOCKER_TAG rycus86/grafana:$GRAFANA_VERSION-alt-$DOCKER_TAG
-              docker push rycus86/grafana:$GRAFANA_VERSION-alt-$DOCKER_TAG
+              docker tag grafana:${DOCKER_TAG} rycus86/grafana:${DOCKER_TAG}${MODIFIER}
+              docker push rycus86/grafana:${DOCKER_TAG}${MODIFIER}
+          elif [ "$TRAVIS_BRANCH" == "${GRAFANA_VERSION}${MODIFIER}" ]; then
+              docker tag grafana:${DOCKER_TAG} rycus86/grafana:${GRAFANA_VERSION}${MODIFIER}-${DOCKER_TAG}
+              docker push rycus86/grafana:${GRAFANA_VERSION}${MODIFIER}-${DOCKER_TAG}
           fi
       env:
         - DOCKER_FROM=debian:stable-slim
@@ -49,9 +49,9 @@ jobs:
     - stage: manifest
       script:
         - |
-          if [ "$TRAVIS_BRANCH" == "$GRAFANA_VERSION" ]; then
-              sed -i "s#rycus86/grafana:#rycus86/grafana:${GRAFANA_VERSION}-alt-#" manifest.yml
-              sed -i "s#rycus86/grafana:${GRAFANA_VERSION}-latest#rycus86/grafana:${GRAFANA_VERSION}-alt#" manifest.yml
+          if [ "$TRAVIS_BRANCH" == "${GRAFANA_VERSION}${MODIFIER}" ]; then
+              sed -i "s#rycus86/grafana:#rycus86/grafana:${GRAFANA_VERSION}${MODIFIER}-#" manifest.yml
+              sed -i "s#rycus86/grafana:${GRAFANA_VERSION}${MODIFIER}-latest#rycus86/grafana:${GRAFANA_VERSION}${MODIFIER}#" manifest.yml
           fi
         - echo ${DOCKER_PASSWORD} | docker login --username "rycus86" --password-stdin
         - curl -fsSL https://github.com/estesp/manifest-tool/releases/download/v0.7.0/manifest-tool-linux-amd64 > ./manifest-tool
@@ -61,3 +61,4 @@ jobs:
 env:
   global:
   - GRAFANA_VERSION=5.2.2
+  - MODIFIER=-alt
