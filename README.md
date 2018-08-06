@@ -22,13 +22,16 @@ To be exact:
 ENTRYPOINT  [ "/usr/sbin/grafana-server" ]
 CMD         [ "--homepath=/usr/share/grafana",                        \
               "--config=/etc/grafana/grafana.ini",                    \
+              "$@",                                                   \
               "cfg:default.log.mode=console",                         \
               "cfg:default.paths.data=/var/lib/grafana",              \
               "cfg:default.paths.logs=/var/log/grafana",              \
               "cfg:default.paths.plugins=/var/lib/grafana/plugins" ]
 ```
 
-To run it, use:
+This is a multi-arch image, so `latest` will resolve to the image that matches the target CPU architecture.
+
+If you prefer, you can explicitly run the platform-specific version, though there is not much reason to. In this case, use:
 
 ```shell
 docker run -p 3000:3000 -v /tmp/grafana.ini:/etc/grafana/grafana.ini \
@@ -45,7 +48,7 @@ version: '2'
 services:
 
   grafana:
-    image: rycus86/grafana:aarch64
+    image: rycus86/grafana
     restart: always
     ports:
      - "3000:3000"

@@ -3,11 +3,6 @@ sudo: required
 services:
 - docker
 
-addons:
-  apt:
-    packages:
-      - docker-ce
-
 install: skip
 
 jobs:
@@ -15,15 +10,14 @@ jobs:
     - &deploy-stage
       stage: build and deploy
       script:
-        # set up the base image
-        - sed -i "s#^FROM debian:stable-slim#FROM ${DOCKER_FROM}#" Dockerfile
+        # set up QEMU
+        - docker run --rm --privileged multiarch/qemu-user-static:register --reset
         # build
         - >
           docker build -t grafana:$DOCKER_TAG -f Dockerfile \
+            --build-arg BASE_IMAGE=$DOCKER_FROM \
             --build-arg VERSION=$GRAFANA_VERSION \
-            --build-arg CC=$CC \
-            --build-arg CC_PKG=$CC_PKG \
-            --build-arg CC_GOARCH=$CC_GOARCH \
+            --build-arg ARCH=$GRAFANA_ARCH \
             .
       after_success:
         - |
@@ -38,22 +32,19 @@ jobs:
       env:
         - DOCKER_FROM=debian:stable-slim
         - DOCKER_TAG=amd64
+        - GRAFANA_ARCH=amd64
 
     - <<: *deploy-stage
       env:
         - DOCKER_FROM=rycus86/armhf-debian-qemu
         - DOCKER_TAG=armhf
-        - CC=arm-linux-gnueabihf-gcc
-        - CC_PKG=gccgo-arm-linux-gnueabihf
-        - CC_GOARCH=arm
+        - GRAFANA_ARCH=armhf
 
     - <<: *deploy-stage
       env:
         - DOCKER_FROM=rycus86/arm64v8-debian-qemu
         - DOCKER_TAG=aarch64
-        - CC=aarch64-linux-gnu-gcc
-        - CC_PKG=gccgo-aarch64-linux-gnu
-        - CC_GOARCH=arm64
+        - GRAFANA_ARCH=arm64
 
     - stage: manifest
       script:
