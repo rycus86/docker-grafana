@@ -25,9 +25,9 @@ jobs:
           if [ "$TRAVIS_BRANCH" == "master" ]; then
               docker tag grafana:$DOCKER_TAG rycus86/grafana:$DOCKER_TAG
               docker push rycus86/grafana:$DOCKER_TAG
-          elif [ "$TRAVIS_BRANCH" == "$GRAFANA_VERSION" ]; then
-              docker tag grafana:$DOCKER_TAG rycus86/grafana:$GRAFANA_VERSION-$DOCKER_TAG
-              docker push rycus86/grafana:$GRAFANA_VERSION-$DOCKER_TAG
+          elif [ "$TRAVIS_BRANCH" == "$GRAFANA_VERSION-alt" ]; then
+              docker tag grafana:$DOCKER_TAG rycus86/grafana:$GRAFANA_VERSION-alt-$DOCKER_TAG
+              docker push rycus86/grafana:$GRAFANA_VERSION-alt-$DOCKER_TAG
           fi
       env:
         - DOCKER_FROM=debian:stable-slim
@@ -50,8 +50,8 @@ jobs:
       script:
         - |
           if [ "$TRAVIS_BRANCH" == "$GRAFANA_VERSION" ]; then
-              sed -i "s#rycus86/grafana:#rycus86/grafana:${GRAFANA_VERSION}-#" manifest.yml
-              sed -i "s#rycus86/grafana:${GRAFANA_VERSION}-latest#rycus86/grafana:${GRAFANA_VERSION}#" manifest.yml
+              sed -i "s#rycus86/grafana:#rycus86/grafana:${GRAFANA_VERSION}-alt-#" manifest.yml
+              sed -i "s#rycus86/grafana:${GRAFANA_VERSION}-latest#rycus86/grafana:${GRAFANA_VERSION}-alt#" manifest.yml
           fi
         - echo ${DOCKER_PASSWORD} | docker login --username "rycus86" --password-stdin
         - curl -fsSL https://github.com/estesp/manifest-tool/releases/download/v0.7.0/manifest-tool-linux-amd64 > ./manifest-tool
