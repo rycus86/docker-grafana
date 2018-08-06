@@ -2,6 +2,8 @@ ARG BASE_IMAGE=debian:stable-slim
 
 FROM ${BASE_IMAGE}
 
+LABEL maintainer "Viktor Adam <rycus86@gmail.com>"
+
 ARG VERSION=5.2.2
 ARG ARCH=amd64
 

@@ -61,4 +61,4 @@ jobs:
 env:
   global:
   - GRAFANA_VERSION=5.2.2
-  - MODIFIER=-alt
+  - MODIFIER=
