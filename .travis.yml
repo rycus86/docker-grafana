@@ -38,7 +38,7 @@ jobs:
       env:
         - DOCKER_FROM=rycus86/armhf-debian-qemu
         - DOCKER_TAG=armhf
-        - GRAFANA_ARCH=armhf
+        - GRAFANA_ARCH=armel
 
     - <<: *deploy-stage
       env:
