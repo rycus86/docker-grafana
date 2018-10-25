@@ -8,7 +8,7 @@ FROM armhf/debian:jessie-slim
 
 LABEL maintainer "Viktor Adam <rycus86@gmail.com>"
 
-ARG VERSION=5.3.0
+ARG VERSION=5.3.2
 ARG ARCH=armhf
 
 COPY --from=base /tmp/qemu-arm-static /usr/bin/
