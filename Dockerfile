@@ -4,7 +4,7 @@ FROM ${BASE_IMAGE}
 
 LABEL maintainer "Viktor Adam <rycus86@gmail.com>"
 
-ARG VERSION=5.3.3
+ARG VERSION=5.3.4
 ARG ARCH=amd64
 
 RUN apt-get update \
